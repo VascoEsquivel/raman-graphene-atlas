@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raman Spectroscopy of Graphene &amp; Graphene Oxide — Interactive Peak Atlas</title>
+<style>
+:root{
+  --bg:#0f1419; --panel:#161d26; --panel2:#1d2530; --ink:#e8edf2; --muted:#9fb0c0;
+  --line:#2a3542; --accent:#4ea1ff; --accent2:#b98bff; --first:#4ea1ff; --second:#b98bff;
+  --ok:#54d1a0; --warn:#ffb454; --bad:#ff6b6b; --chip:#22303f;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0f1419,#0c1016 60%);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:15px}
+.wrap{max-width:1160px;margin:0 auto;padding:26px 20px 80px}
+header.hero{border:1px solid var(--line);border-radius:16px;padding:26px 28px;background:radial-gradient(1200px 300px at 20% -10%,rgba(78,161,255,.12),transparent),var(--panel)}
+h1{margin:0 0 6px;font-size:26px;letter-spacing:-.3px}
+.sub{color:var(--muted);font-size:14.5px;max-width:80ch}
+.tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tag{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--chip);border:1px solid var(--line);color:var(--muted)}
+.tag b{color:var(--ink)}
+.note-banner{margin-top:16px;border-left:3px solid var(--warn);background:rgba(255,180,84,.08);padding:10px 14px;border-radius:0 10px 10px 0;font-size:13.5px;color:#ffdca8}
+section{margin-top:30px}
+.h2{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;margin:0 0 12px}
+.h2 .bar{width:4px;height:20px;background:var(--accent);border-radius:3px}
+.spectrum{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:14px 10px 6px;overflow:hidden}
+.spectrum svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;color:var(--muted);font-size:12px;margin:2px 0 6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px}
+.tab{cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--muted);padding:8px 13px;border-radius:10px;font-size:13.5px;font-weight:600;transition:.15s;display:flex;align-items:center;gap:7px}
+.tab:hover{color:var(--ink);border-color:#38506b}
+.tab.active{color:#08121c;background:var(--accent);border-color:var(--accent)}
+.tab.second.active{background:var(--accent2);border-color:var(--accent2)}
+.tab .w{font-family:var(--mono);font-size:11px;opacity:.8}
+.tab.active .w{opacity:.9}
+.tab .flag{width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.panel{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:0;overflow:hidden;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.phead{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.phead .sym{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.phead .nm{font-size:15px;color:var(--muted)}
+.phead .pos{margin-left:auto;font-family:var(--mono);font-size:14px;color:var(--ink);background:var(--chip);padding:6px 12px;border-radius:8px;border:1px solid var(--line)}
+.badges{display:flex;flex-wrap:wrap;gap:7px;padding:14px 22px 2px}
+.badge{font-size:11.5px;padding:4px 10px;border-radius:16px;border:1px solid var(--line);color:var(--muted);background:var(--panel2)}
+.badge.first{color:#bcdcff}
+.badge.second{color:#e4d3ff}
+.badge.act{color:#ffd9a1}
+.badge.ind{color:#bff0d8}
+.pbody{padding:8px 22px 22px;display:grid;grid-template-columns:1fr;gap:2px}
+.field{padding:12px 0;border-bottom:1px solid rgba(42,53,66,.6)}
+.field:last-child{border-bottom:none}
+.field .k{font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:4px;font-weight:700}
+.field .v{font-size:14.5px}
+.field .v .mono{font-family:var(--mono);background:var(--chip);padding:1px 6px;border-radius:5px;font-size:13px}
+.correct{border:1px solid rgba(255,107,107,.4);background:rgba(255,107,107,.07);border-radius:10px;padding:12px 14px;margin-top:6px}
+.correct .k{color:var(--bad)}
+.refs-inline{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.refchip{font-size:12px;color:#bcdcff;text-decoration:none;border:1px solid var(--line);padding:3px 9px;border-radius:14px;background:var(--panel2)}
+.refchip:hover{border-color:var(--accent);color:#fff}
+.refchip.newref{color:#ffd9a1;border-color:rgba(255,180,84,.4)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--panel2);color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;user-select:none;position:sticky;top:0}
+th:hover{color:var(--ink)}
+tr:hover td{background:rgba(78,161,255,.05)}
+td .mono{font-family:var(--mono);font-size:12.5px}
+.pill{font-size:11px;padding:2px 8px;border-radius:12px;border:1px solid var(--line)}
+.pill.first{color:#bcdcff} .pill.second{color:#e4d3ff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:16px 18px}
+.card h3{margin:0 0 8px;font-size:15px}
+.card .eq{font-family:var(--mono);background:#0c1219;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:12.5px;color:#cfe6ff;margin:8px 0;overflow-x:auto}
+.ratio{margin:10px 0;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.ratio:last-child{border-bottom:none}
+.ratio .name{font-weight:700;color:var(--accent)}
+ul.clean{margin:6px 0 0;padding-left:18px} ul.clean li{margin:4px 0}
+.flow{counter-reset:step;display:grid;gap:10px}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--panel)}
+.step .n{counter-increment:step;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#08121c;font-weight:800;display:grid;place-items:center;font-size:13px}
+.step .n::before{content:counter(step)}
+.reflist{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:6px 4px}
+.refrow{display:flex;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line);font-size:13.5px;align-items:baseline}
+.refrow:last-child{border-bottom:none}
+.refrow a{color:var(--accent);text-decoration:none} .refrow a:hover{text-decoration:underline}
+.newbadge{font-size:10px;font-weight:700;color:#08121c;background:var(--warn);padding:1px 7px;border-radius:10px;margin-left:6px}
+.foot{margin-top:34px;color:var(--muted);font-size:12.5px;text-align:center;line-height:1.7}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}.phead .pos{margin-left:0}}
+.refrow{justify-content:space-between}.reftext{flex:1;min-width:0}.refmeta{display:flex;gap:8px;align-items:center;white-space:nowrap;flex-shrink:0}
+.ccbadge{font-size:11px;color:#bcdcff;background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:2px 9px;white-space:nowrap}
+.ccbadge.hi{color:#8ff0c0;border-color:rgba(84,209,160,.45)}
+.refnote{color:var(--muted);font-size:12.5px;margin:-2px 0 12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1>Raman Spectroscopy of Graphene &amp; Graphene Oxide</h1>
+    <div class="sub">An interactive atlas of the nine-band deconvolution model. Click any peak in the spectrum or a tab below to explore its vibrational origin, the physics it encodes, and how to use it diagnostically — cross-checked against the primary literature.</div>
+    <div class="tagrow">
+      <span class="tag"><b>9</b> deconvoluted bands</span>
+      <span class="tag"><b>First-order</b> ~1000–1650 cm⁻¹</span>
+      <span class="tag"><b>Second-order</b> ~2300–3300 cm⁻¹</span>
+      <span class="tag"><b>2</b> accuracy corrections flagged</span>
+    </div>
+    <div class="note-banner">This atlas keeps the graphene-oxide 9-band deconvolution labels but flags where a label conflicts with mainstream graphene nomenclature (D+D″) or where a claim was overstated (2D′). Corrected items carry a red note and added references.</div>
+  </header>
+
+  <section>
+    <div class="h2"><span class="bar"></span>Interactive spectrum — click a peak</div>
+    <div class="spectrum">
+      <div class="legend">
+        <span><span class="dot" style="background:var(--first)"></span>First-order</span>
+        <span><span class="dot" style="background:var(--second)"></span>Second-order</span>
+        <span><span class="dot" style="background:var(--warn)"></span>flagged / corrected</span>
+      </div>
+      <div id="spectrum"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2"><span class="bar"></span>Peak explorer</div>
+    <div class="tabs" id="tabs"></div>
+    <div id="panel"></div>
+  </section>
+
+  <section>
+    <div class="h2"><span class="bar" style="background:var(--accent2)"></span>All nine bands — sortable comparison</div>
+    <div style="overflow:auto;border-radius:12px">
+      <table id="cmp"><thead><tr>
+        <th data-k="label">Band</th><th data-k="posSort">Position (cm⁻¹)</th>
+        <th data-k="region">Order</th><th data-k="activated">Activation</th>
+        <th data-k="origin">Vibrational origin</th><th data-k="use">Primary diagnostic use</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2"><span class="bar" style="background:var(--ok)"></span>Intensity-ratio guide</div>
+    <div id="ratios" class="grid2"></div>
+  </section>
+
+  <section>
+    <div class="h2"><span class="bar" style="background:var(--warn)"></span>Read your own spectrum — decision workflow</div>
+    <div class="flow" id="cheat"></div>
+  </section>
+
+  <section>
+    <div class="h2"><span class="bar"></span>References</div>
+    <div class="refnote">Citation counts (badges) are from <b>Semantic Scholar</b>, retrieved Jul 2026 — Google Scholar figures are typically higher. Every source is well cited; the foundational reviews exceed several thousand citations, confirming reputability. Green badges mark ≥2,000 citations.</div><div class="reflist" id="reflist"></div>
+  </section>
+
+  <div class="foot">
+    Built for reference use. Peak positions are representative and shift with excitation wavelength, strain, doping, layer number and oxidation degree — always calibrate against a known standard.<br>
+    Sources are hyperlinked above; <span style="color:var(--warn)">■</span> marks references added during the accuracy review.
+  </div>
+</div>
+<script>
+const REFS = {
+  ferrari06:{c:"Ferrari, Meyer, Scardaci et al. (2006). Raman Spectrum of Graphene and Graphene Layers. Phys. Rev. Lett. 97, 187401.",u:"https://doi.org/10.1103/PhysRevLett.97.187401",cc:"~11,200"},
+  claramunt15:{c:"Claramunt, Varea, López-Díaz et al. (2015). The Importance of Interbands on the Interpretation of the Raman Spectrum of Graphene Oxide. J. Phys. Chem. C 119, 10123.",u:"https://doi.org/10.1021/acs.jpcc.5b01590",cc:"707"},
+  lopez20:{c:"López-Díaz, Delgado-Notario, Clericò et al. (2020). Towards Understanding the Raman Spectrum of Graphene Oxide. Coatings 10, 524.",u:"https://doi.org/10.3390/coatings10060524",cc:"114"},
+  eckmann12:{c:"Eckmann, Felten, Mishchenko et al. (2012). Probing the Nature of Defects in Graphene by Raman Spectroscopy. Nano Lett. 12, 3925.",u:"https://doi.org/10.1021/nl300901a",cc:"~2,100"},
+  cancado11:{c:"Cançado, Jorio, Ferreira et al. (2011). Quantifying Defects in Graphene via Raman Spectroscopy at Different Excitation Energies. Nano Lett. 11, 3190.",u:"https://doi.org/10.1021/nl201432g",cc:"~3,400"},
+  ott24:{c:"Ott & Ferrari (2024). Raman Spectroscopy of Graphene and Related Materials. Encyclopedia of Condensed Matter Physics, 233–247.",u:"",cc:"2024 review"},
+  sadezky05:{c:"Sadezky, Muckenhuber, Grothe et al. (2005). Raman spectra of soot and related carbonaceous materials. Carbon 43, 1731.",u:"https://doi.org/10.1016/j.carbon.2005.02.018",cc:"~4,400"},
+  ferraribasko13:{c:"Ferrari & Basko (2013). Raman spectroscopy as a versatile tool for studying the properties of graphene. Nat. Nanotechnol. 8, 235.",u:"https://doi.org/10.1038/nnano.2013.46",n:1,cc:"~6,700"},
+  malard09:{c:"Malard, Pimenta, Dresselhaus & Dresselhaus (2009). Raman spectroscopy in graphene. Phys. Rep. 473, 51.",u:"https://doi.org/10.1016/j.physrep.2009.02.003",n:1,cc:"~4,900"},
+  tk70:{c:"Tuinstra & Koenig (1970). Raman Spectrum of Graphite. J. Chem. Phys. 53, 1126.",u:"https://doi.org/10.1063/1.1674108",n:1,cc:"~10,000"},
+  fr2000:{c:"Ferrari & Robertson (2000). Interpretation of Raman spectra of disordered and amorphous carbon. Phys. Rev. B 61, 14095.",u:"https://doi.org/10.1103/PhysRevB.61.14095",n:1,cc:"~13,400"},
+  strain2d15:{c:"Del Corro et al. (2015). Strain Assessment in Graphene Through the Raman 2D′ Mode. J. Phys. Chem. C 119, 25358.",u:"https://doi.org/10.1021/acs.jpcc.5b09643",n:1,cc:"45"},
+  leeryu12:{c:"Lee, Ahn, Shim, Lee & Ryu (2012). Optical separation of mechanical strain from charge doping in graphene. Nat. Commun. 3, 1024.",u:"https://doi.org/10.1038/ncomms2022",n:1,cc:"~1,000"}
+};
+
+const PEAKS = [
+ {id:"Dstar",label:"D*",name:"D* band (Sadezky D4)",region:"first",order:"First-order",activated:"Disorder / sp³",sym:"—",posText:"~1150–1200 cm⁻¹",posSort:1180,plot:{mu:1180,A:.13,sig:42},
+  origin:"sp³ / C–H bending / polyene-like chains",use:"sp³ functionalisation &amp; C–H/C–O edge groups",
+  process:"Not a graphene double-resonance mode. Attributed to the disordered sp³-rich phase and the phonon density of states of finite/defective domains.",
+  mechanism:"C–H in-plane bending, vibrations of short aliphatic / polyene-like (trans-polyacetylene-type) chains, and sp³-rich carbon adjacent to oxygen functional groups. In Sadezky's five-band scheme for disordered carbon this is the <b>D4</b> component.",
+  meaning:"A direct marker of <b>sp³ functionalisation</b> and edge C–H / C–O bonding. Grows with oxidation and shrinks during chemical/thermal reduction as the sp² network is restored. Frequently too weak to fit reliably in well-ordered or lightly oxidised GO.",
+  diagnostics:"Presence/area tracks oxidation degree. Its disappearance is one signature of successful reduction toward rGO.",
+  refs:["claramunt15","sadezky05","lopez20","fr2000"]},
+
+ {id:"D",label:"D",name:"D band (disorder / defect)",region:"first",order:"First-order",activated:"Defect-activated",sym:"A₁g breathing",posText:"~1350 cm⁻¹",posSort:1350,plot:{mu:1350,A:.9,sig:46},
+  origin:"A₁g ring-breathing (1 iTO phonon, intervalley)",use:"Defect density; crystallite size Lₐ / inter-defect distance L_D",
+  process:"<b>Intervalley double resonance</b> (K↔K′): one in-plane transverse-optical (iTO) phonon near the K point plus one elastic scattering event off a defect. Strongly dispersive (~50 cm⁻¹ per eV of laser energy).",
+  mechanism:"Symmetric <b>A₁g breathing mode</b> of the six-membered aromatic rings. Because it needs a defect (or edge) to conserve momentum, it is <b>forbidden in pristine, infinite single-layer graphene</b>.",
+  meaning:"The workhorse defect probe. I<sub>D</sub>/I<sub>G</sub> quantifies defect density and crystallite size — but only once you know which regime you are in (see the ratio guide: low-defect Tuinstra–Koenig vs. high-defect amorphisation).",
+  diagnostics:"Lₐ (nm) = (560/E<sub>l</sub>⁴)·(I<sub>D</sub>/I<sub>G</sub>)⁻¹ in the low-defect regime (E<sub>l</sub> in eV; Cançado 2011). Also yields inter-defect distance L_D.",
+  refs:["ferraribasko13","tk70","cancado11","malard09","claramunt15"]},
+
+ {id:"Dpp",label:"D″",name:"D″ band (Sadezky D3)",region:"first",order:"First-order",activated:"Disorder / amorphous",sym:"—",posText:"~1500–1550 cm⁻¹",posSort:1520,plot:{mu:1520,A:.2,sig:52},
+  origin:"Amorphous sp² phase / oxygen linkages",use:"Amorphous-carbon fraction &amp; functionalisation",
+  process:"Broad feature between D and G, fit as the <b>D3</b> component of disordered carbon.",
+  mechanism:"Amorphous sp² carbon and interstitial lattice defects, plus out-of-plane vibrations of oxygen functional groups (epoxy C–O–C, hydroxyl C–OH). Reflects lattice distortion by oxygen intercalants.",
+  meaning:"Its intensity/width scales with the <b>amorphous fraction</b>; it decreases and narrows during thermal annealing as the lattice recrystallises.",
+  diagnostics:"Useful for staging oxidation/reduction. Often small (undetectable) in well-crystalline flakes.",
+  correction:"The label <b>D″ is overloaded</b>. Here it denotes the ~1500 cm⁻¹ amorphous band (Sadezky D3). In mainstream graphene physics, <b>D″ instead denotes a ~1100 cm⁻¹ phonon on the LA branch</b> — the one that produces the ~2450 cm⁻¹ combination band (see the D+D″ tab). Keep the two meanings distinct when comparing papers.",
+  refs:["claramunt15","sadezky05","lopez20","malard09"]},
+
+ {id:"G",label:"G",name:"G band (graphitic E₂g)",region:"first",order:"First-order",activated:"Raman-allowed",sym:"E₂g at Γ",posText:"~1580–1600 cm⁻¹",posSort:1585,plot:{mu:1585,A:.85,sig:30},
+  origin:"E₂g in-plane C–C stretch at Γ",use:"Baseline mode; oxidation / doping / strain gauge",
+  process:"First-order, <b>Raman-allowed at the Brillouin-zone centre (Γ)</b>. No defect required — active in every sp² carbon material.",
+  mechanism:"In-plane bond-stretching of sp² C–C atom pairs (the degenerate LO/iTO optical mode of <b>E₂g</b> symmetry at Γ). The fundamental reference peak of the spectrum.",
+  meaning:"Blue-shifts (stiffens) upon oxidation as sp² domains become isolated, and is sensitive to <b>charge doping</b> (via removal of the Kohn anomaly) and <b>strain</b> (splits into G⁺/G⁻ under uniaxial strain). In GO the apparent G maximum often sits at 1590–1600 cm⁻¹ because it overlaps D′.",
+  diagnostics:"Position + FWHM report doping and strain; pairing ω(G) with ω(2D) separates the two.",
+  refs:["ferraribasko13","malard09","cancado11","leeryu12"]},
+
+ {id:"Dp",label:"D′",name:"D′ band (D-prime)",region:"first",order:"First-order",activated:"Defect-activated",sym:"—",posText:"~1620 cm⁻¹",posSort:1620,plot:{mu:1620,A:.24,sig:18},
+  origin:"1 iLO phonon, intravalley DR",use:"Defect TYPE via I_D/I_D′",
+  process:"<b>Intravalley double resonance</b>: one in-plane longitudinal-optical (iLO) phonon plus a defect, connecting two points within the <b>same</b> Dirac cone around K. Appears as a shoulder on the high-frequency side of G.",
+  mechanism:"Defect-activated companion to the D band. Because D (intervalley) and D′ (intravalley) probe different scattering geometries, their <b>ratio</b> encodes the physical nature of the defect.",
+  meaning:"I<sub>D</sub>/I<sub>D′</sub> classifies the dominant defect type (Eckmann 2012): <span class='mono'>≈13</span> sp³ defects, <span class='mono'>≈7</span> vacancies, <span class='mono'>≈3.5</span> boundaries/edges.",
+  diagnostics:"The single most useful ratio for distinguishing chemical (sp³) from structural (vacancy/edge) disorder.",
+  refs:["eckmann12","ferraribasko13","malard09"]},
+
+ {id:"twoD",label:"2D",name:"2D band (G′)",region:"second",order:"Second-order",activated:"Defect-INDEPENDENT",sym:"2× iTO",posText:"~2680–2700 cm⁻¹",posSort:2690,plot:{mu:2690,A:.32,sig:58},
+  origin:"Two iTO phonons (q,−q), intervalley",use:"Layer number &amp; monolayer quality",
+  process:"<b>Two-phonon intervalley double resonance</b>: two iTO phonons of opposite momentum (q and −q). It is the overtone of the D-band phonon, but the two phonons conserve momentum by themselves — so <b>no defect is needed</b>. Highly dispersive (~100 cm⁻¹/eV).",
+  mechanism:"Because its intensity does not require disorder, the 2D band survives in pristine graphene where D is absent.",
+  meaning:"In pristine <b>single-layer</b> graphene it is a single sharp Lorentzian (FWHM ≈ 24–30 cm⁻¹) with I<sub>2D</sub>/I<sub>G</sub> ≈ 2 (up to ~4 for suspended flakes). It splits into four components in AB-stacked bilayers and broadens with layer number. Re-emergence during GO reduction signals restored electronic conjugation.",
+  diagnostics:"Lineshape + I<sub>2D</sub>/I<sub>G</sub> is the standard monolayer fingerprint; position also shifts with strain and doping.",
+  refs:["ferrari06","ferraribasko13","malard09"]},
+
+ {id:"DDpp",label:"D+D″",name:"D+D″ combination band",region:"second",order:"Second-order",activated:"Disorder-related",sym:"combination",posText:"model: ~2850–2900 cm⁻¹",posSort:2870,plot:{mu:2870,A:.13,sig:55},
+  origin:"Combination band (label-dependent)",use:"Coupling of point &amp; amorphous disorder (interpret with care)",
+  process:"In the GO 9-band deconvolution this is fit near ~2850–2900 cm⁻¹ as a combination of the D phonon (~1350) and the ~1500 cm⁻¹ D″ (amorphous) mode.",
+  mechanism:"As used in the GO model: probes coupling between lattice point defects (D) and amorphous/functionalised disorder (D″). Prominent in mid-to-highly oxidised GO; diminishes on annealing.",
+  meaning:"Treat this band's <b>label and position with caution</b> — see the correction. Its area still trends with oxidation in the GO model, but overlapping C–H stretching can contaminate it.",
+  diagnostics:"Use as a qualitative oxidation indicator only; verify against the C–H region and the canonical 2450 cm⁻¹ feature.",
+  correction:"<b>Nomenclature conflict.</b> In mainstream graphene literature (Ferrari &amp; Basko; Malard), <b>D+D″ is the ~2450 cm⁻¹ band</b> (a.k.a. G*) — the D iTO phonon combined with a phonon on the <b>LA branch (~1100 cm⁻¹)</b>, not the ~1500 cm⁻¹ amorphous band. Moreover, the ~2850–2920 cm⁻¹ window is where <b>sp³ C–H stretching</b> appears in oxidised GO (ν<sub>s</sub>CH₂ ≈ 2853, ν<sub>as</sub>CH₂ ≈ 2921). So a feature you see at ~2870 cm⁻¹ may be C–H, not a phonon combination. If you observe a band near <span class='mono'>2450 cm⁻¹</span>, that is the true D+D″ / G*.",
+  refs:["ferraribasko13","malard09","fr2000","claramunt15","lopez20"]},
+
+ {id:"DDp",label:"D+D′",name:"D+D′ combination band",region:"second",order:"Second-order",activated:"Defect-activated",sym:"combination",posText:"~2930–2950 cm⁻¹",posSort:2935,plot:{mu:2935,A:.19,sig:60},
+  origin:"D (intervalley) + D′ (intravalley)",use:"Overall disorder; sp² recovery on reduction",
+  process:"Disorder-activated <b>combination</b> of one D phonon (intervalley iTO) and one D′ phonon (intravalley iLO). Requires defects for momentum conservation.",
+  mechanism:"Because it mixes the two defect channels, it is a robust overall measure of structural + chemical disorder.",
+  meaning:"Its peak position correlates linearly with the % of sp² carbon recovered during GO reduction — one of the three correlations López-Díaz use to quantify oxidation degree.",
+  diagnostics:"Position/area vs. sp² fraction; a practical reduction-progress meter.",
+  correction:"Historically this band was mislabelled <b>“D+G”</b> (1350+1580 ≈ 2930). The correct assignment is <b>D+D′</b> — the G phonon is Raman-allowed at Γ and does not participate in this double-resonance combination.",
+  refs:["ferraribasko13","malard09","lopez20","claramunt15"]},
+
+ {id:"twoDp",label:"2D′",name:"2D′ band (overtone of D′)",region:"second",order:"Second-order",activated:"Defect-INDEPENDENT",sym:"2× iLO",posText:"~3220–3245 cm⁻¹",posSort:3230,plot:{mu:3230,A:.11,sig:46},
+  origin:"Two iLO phonons, intravalley",use:"Auxiliary strain probe",
+  process:"Second-order <b>overtone of D′</b>: two intravalley iLO phonons. Like 2D, it needs no defect.",
+  mechanism:"The intravalley counterpart of the 2D band, sitting at the high-frequency end of the spectrum.",
+  meaning:"Responds to mechanical strain and is <b>less sensitive to charge doping than G or 2D</b>, which is why it has been proposed as an auxiliary gauge for strain assessment.",
+  diagnostics:"Helpful as a cross-check when separating strain from doping — but combine with the ω(2D)–ω(G) correlation for a full separation.",
+  correction:"<b>Overstated in the source.</b> 2D′ is <b>not</b> a “pure strain gauge free of doping.” Electrochemical-doping studies show its position/intensity do shift with carrier density; strain and charge effects remain coupled. It is <i>less</i> doping-sensitive than G/2D — useful, but not doping-independent (Del Corro 2015; Lee &amp; Ryu 2012).",
+  refs:["strain2d15","leeryu12","ferraribasko13"]}
+];
+
+const RATIOS = [
+ {n:"I_D / I_G",t:"Defect density &amp; crystallite size",b:"The most-used ratio — but it is <b>two-valued</b>, so you must know the regime:",
+  eqs:["Low-defect (Tuinstra–Koenig): Lₐ ∝ (I_D/I_G)⁻¹","Cançado 2011: Lₐ[nm] = (560 / E_l⁴) · (I_D/I_G)⁻¹   (E_l in eV)","High-defect (amorphisation, Ferrari–Robertson): I_D/I_G ∝ Lₐ²"],
+  note:"The ratio rises as defects increase, <b>peaks near Lₐ ≈ 3–4 nm, then falls</b>. A given I_D/I_G value maps to two crystallite sizes — disambiguate with G-band width (broad G ⇒ amorphisation regime).",refs:["tk70","cancado11","fr2000"]},
+ {n:"I_D / I_D′",t:"Defect TYPE",b:"Separates chemical from structural disorder (Eckmann 2012):",
+  eqs:["≈ 13  → sp³ defects (covalent O/H bonding)","≈ 7   → vacancy-type defects","≈ 3.5 → boundary / edge defects"],
+  note:"Nearly excitation-independent, which makes it more robust than I_D/I_G for identifying <i>what kind</i> of defect dominates.",refs:["eckmann12"]},
+ {n:"I_2D / I_G  +  2D lineshape",t:"Layer number &amp; quality",b:"Read intensity ratio and lineshape together:",
+  eqs:["Single Lorentzian, FWHM ≈ 24–30 cm⁻¹, I_2D/I_G ≈ 2 → monolayer","4-component, broader 2D, lower ratio → AB bilayer / few-layer","Weak/absent 2D + strong D → GO / highly disordered"],
+  note:"Suspended high-quality monolayers can reach I_2D/I_G ≈ 4. Substrate doping lowers the ratio, so combine with FWHM.",refs:["ferrari06","ferraribasko13"]},
+ {n:"A_D′ / A_G  (integrated)",t:"sp³ vs. vacancy character",b:"Integrated-area version used in GO work:",
+  eqs:["Compared against ab-initio curves for sp³ vs. vacancy defects","Position of 2D and of D+D′ → % sp² carbon (López-Díaz correlations)"],
+  note:"Three independent correlations (I_D/I_G, ω(2D), ω(D+D′)) should agree — cross-check them and, where possible, against XPS C/O.",refs:["lopez20","claramunt15"]}
+];
+
+const CHEAT = [
+ "Only G (~1585) + a single sharp 2D (FWHM &lt; 30 cm⁻¹, I_2D/I_G ≥ 2), D absent → <b>pristine single-layer graphene</b>.",
+ "G + a broader, multi-component 2D, still little/no D → <b>few-layer AB-stacked graphene</b> (count components / check ratio).",
+ "Strong D, a D′ shoulder on G, broad bands, D* and D″ present, weak or absent 2D → <b>graphene oxide / highly disordered carbon</b>.",
+ "Compute <b>I_D/I_D′</b> → 13 / 7 / 3.5 tells you sp³ vs. vacancy vs. edge defects.",
+ "Compute <b>I_D/I_G</b>, decide the regime from the G-band width, then apply the Cançado equation for crystallite size Lₐ.",
+ "Track reduction (GO→rGO): D/G evolving, <b>2D re-emerging</b>, D+D′ shifting, and D*/D″ shrinking all indicate increasing sp² content.",
+ "For strain vs. doping: use ω(G) and ω(2D) positions and the ω(2D)-vs-ω(G) correlation; treat 2D′ as an auxiliary (not absolute) strain check.",
+ "Around 2850–2920 cm⁻¹, decide whether you are seeing a phonon combination or <b>sp³ C–H stretching</b> before assigning D+D″ — and remember the canonical D+D″/G* sits near 2450 cm⁻¹."
+];
+
+// ---------- rendering ----------
+const $=s=>document.querySelector(s), el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+function refChips(keys){return keys.map(k=>{const r=REFS[k];if(!r)return"";const cls="refchip"+(r.n?" newref":"");const label=r.c.split("(")[0].trim()+" "+(r.c.match(/\((\d{4})\)/)?r.c.match(/\((\d{4})\)/)[1]:"");if(r.u)return `<a class="${cls}" href="${r.u}" target="_blank" rel="noopener">${label}${r.n?" ■":""}</a>`;return `<span class="${cls}">${label}${r.n?" ■":""}</span>`;}).join("");}
+
+const W=1000,H=300,PAD=44,X0=1000,X1=3300,base=H-38;
+const xw=w=>PAD+(w-X0)/(X1-X0)*(W-2*PAD);
+function buildSpectrum(){
+  let pts=[];
+  for(let w=X0;w<=X1;w+=6){let y=0;PEAKS.forEach(p=>{y+=p.plot.A*Math.exp(-((w-p.plot.mu)**2)/(2*p.plot.sig*p.plot.sig));});pts.push([xw(w),base-y*198]);}
+  const path=pts.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
+  let ax="";[1000,1500,2000,2500,3000,3300].forEach(t=>{const x=xw(t);ax+=`<line x1="${x}" y1="${base}" x2="${x}" y2="${base+5}" stroke="#3a4757"/><text x="${x}" y="${base+20}" fill="#7f93a6" font-size="12" text-anchor="middle">${t}</text>`;});
+  ax+=`<text x="${W/2}" y="${base+34}" fill="#9fb0c0" font-size="12.5" text-anchor="middle">Raman shift (cm⁻¹)</text>`;
+  let marks="";PEAKS.forEach(p=>{const x=xw(p.plot.mu),y=base-p.plot.A*198;const col=p.region==="first"?"var(--first)":"var(--second)";const flag=p.correction?'<circle r="4" cx="'+x+'" cy="'+(y-30)+'" fill="var(--warn)"/>':"";
+    marks+=`<g class="pk" data-id="${p.id}" style="cursor:pointer">
+      <line x1="${x}" y1="${y-6}" x2="${x}" y2="${base}" stroke="${col}" stroke-dasharray="3 3" opacity=".5"/>
+      <circle cx="${x}" cy="${y-6}" r="6" fill="${col}"/>
+      <rect x="${x-20}" y="${y-40}" width="40" height="18" rx="5" fill="#0c1219" stroke="${col}"/>
+      <text x="${x}" y="${y-27}" fill="#e8edf2" font-size="12" font-weight="700" text-anchor="middle">${p.label}</text>${flag}</g>`;});
+  $("#spectrum").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Schematic Raman spectrum">
+    <line x1="${PAD}" y1="${base}" x2="${W-PAD}" y2="${base}" stroke="#3a4757"/>
+    <path d="${path}" fill="none" stroke="#4ea1ff" stroke-width="2" opacity=".85"/>
+    ${ax}${marks}</svg>`;
+  document.querySelectorAll(".pk").forEach(g=>g.addEventListener("click",()=>select(g.dataset.id)));
+}
+
+function buildTabs(){
+  const t=$("#tabs");t.innerHTML="";
+  PEAKS.forEach(p=>{const b=el("button","tab "+(p.region==="second"?"second":"first"));b.dataset.id=p.id;
+    b.innerHTML=`${p.label}<span class="w">${p.plot.mu}</span>`+(p.correction?'<span class="flag" title="correction/flag"></span>':"");
+    b.addEventListener("click",()=>select(p.id));t.appendChild(b);});
+}
+function select(id){
+  const p=PEAKS.find(x=>x.id===id);if(!p)return;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.id===id));
+  document.querySelectorAll(".pk circle").forEach(c=>c.setAttribute("stroke","none"));
+  const rc=p.region==="first"?"first":"second";
+  let html=`<div class="panel"><div class="phead"><span class="sym">${p.label}</span><span class="nm">${p.name}</span><span class="pos">${p.posText}</span></div>
+    <div class="badges"><span class="badge ${rc}">${p.order}</span><span class="badge act">${p.activated}</span>${p.sym!=="—"?`<span class="badge ind">Symmetry / mode: ${p.sym}</span>`:""}</div>
+    <div class="pbody">
+      <div class="field"><div class="k">Scattering process</div><div class="v">${p.process}</div></div>
+      <div class="field"><div class="k">Vibrational mechanism</div><div class="v">${p.mechanism}</div></div>
+      <div class="field"><div class="k">Physical meaning</div><div class="v">${p.meaning}</div></div>
+      <div class="field"><div class="k">Diagnostic use</div><div class="v">${p.diagnostics}</div></div>
+      ${p.correction?`<div class="correct"><div class="k">⚠ Accuracy note / correction</div><div class="v">${p.correction}</div></div>`:""}
+      <div class="field"><div class="k">Key references</div><div class="refs-inline">${refChips(p.refs)}</div></div>
+    </div></div>`;
+  $("#panel").innerHTML=html;
+}
+
+let sortKey="posSort",sortDir=1;
+function buildTable(){
+  const tb=$("#cmp tbody");const rows=[...PEAKS].sort((a,b)=>{let x=a[sortKey],y=b[sortKey];if(typeof x==="string"){x=x.toLowerCase();y=y.toLowerCase();}return x>y?sortDir:x<y?-sortDir:0;});
+  tb.innerHTML=rows.map(p=>`<tr style="cursor:pointer" onclick="select('${p.id}')">
+    <td><b>${p.label}</b>${p.correction?' <span style="color:var(--warn)">■</span>':""}</td>
+    <td><span class="mono">${p.posText.replace('model: ','')}</span></td>
+    <td><span class="pill ${p.region}">${p.order}</span></td>
+    <td>${p.activated}</td><td>${p.origin}</td><td>${p.use}</td></tr>`).join("");
+}
+document.querySelectorAll("#cmp th").forEach(th=>th.addEventListener("click",()=>{const k=th.dataset.k;sortDir=(k===sortKey)?-sortDir:1;sortKey=(k==="posSort"?"posSort":k);buildTable();}));
+
+function buildRatios(){$("#ratios").innerHTML=RATIOS.map(r=>`<div class="card"><h3>${r.n}</h3><div style="color:var(--muted);font-size:13px;margin-bottom:2px">${r.t}</div><div style="font-size:13.5px">${r.b}</div>${r.eqs.map(e=>`<div class="eq">${e}</div>`).join("")}<div style="font-size:13px;color:var(--muted);margin-top:6px">${r.note}</div><div class="refs-inline" style="margin-top:8px">${refChips(r.refs)}</div></div>`).join("");}
+function buildCheat(){$("#cheat").innerHTML=CHEAT.map(c=>`<div class="step"><div class="n"></div><div>${c}</div></div>`).join("");}
+function buildRefs(){$("#reflist").innerHTML=Object.values(REFS).map(r=>{const n=parseInt((r.cc||"").replace(/[^0-9]/g,""))||0;const cc=r.cc?`<span class="ccbadge ${n>=2000?"hi":""}">${/review/.test(r.cc)?r.cc:r.cc+" citations"}</span>`:"";const added=r.n?'<span class="newbadge">ADDED</span>':"";const txt=r.u?`<a href="${r.u}" target="_blank" rel="noopener">${r.c}</a>`:r.c;return `<div class="refrow"><span class="reftext">${txt}</span><span class="refmeta">${cc}${added}</span></div>`;}).join("");}
+
+buildSpectrum();buildTabs();select("D");buildTable();buildRatios();buildCheat();buildRefs();
+</script>
+</body></html>
