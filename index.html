@@ -104,9 +104,9 @@ ul.clean{margin:6px 0 0;padding-left:18px} ul.clean li{margin:4px 0}
       <span class="tag"><b>9</b> deconvoluted bands</span>
       <span class="tag"><b>First-order</b> ~1000–1650 cm⁻¹</span>
       <span class="tag"><b>Second-order</b> ~2300–3300 cm⁻¹</span>
-      <span class="tag"><b>2</b> accuracy corrections flagged</span>
+      <span class="tag"><b>G*</b> band placed at ~2450 (fixed)</span>
     </div>
-    <div class="note-banner">This atlas keeps the graphene-oxide 9-band deconvolution labels but flags where a label conflicts with mainstream graphene nomenclature (D+D″) or where a claim was overstated (2D′). Corrected items carry a red note and added references.</div>
+    <div class="note-banner">This atlas uses the graphene-oxide 9-band deconvolution. The second-order <b>G* (D+D″)</b> band is placed at its correct <b>~2450 cm⁻¹</b> position (matching your measured data); the ~2850–2920 cm⁻¹ region is sp³ C–H stretching, not a lattice phonon band. Corrected / updated items carry a red note and references.</div>
   </header>
 
   <section>
@@ -225,14 +225,14 @@ const PEAKS = [
   diagnostics:"Lineshape + I<sub>2D</sub>/I<sub>G</sub> is the standard monolayer fingerprint; position also shifts with strain and doping.",
   refs:["ferrari06","ferraribasko13","malard09"]},
 
- {id:"DDpp",label:"D+D″",name:"D+D″ combination band",region:"second",order:"Second-order",activated:"Disorder-related",sym:"combination",posText:"model: ~2850–2900 cm⁻¹",posSort:2870,plot:{mu:2870,A:.13,sig:55},
-  origin:"Combination band (label-dependent)",use:"Coupling of point &amp; amorphous disorder (interpret with care)",
-  process:"In the GO 9-band deconvolution this is fit near ~2850–2900 cm⁻¹ as a combination of the D phonon (~1350) and the ~1500 cm⁻¹ D″ (amorphous) mode.",
-  mechanism:"As used in the GO model: probes coupling between lattice point defects (D) and amorphous/functionalised disorder (D″). Prominent in mid-to-highly oxidised GO; diminishes on annealing.",
-  meaning:"Treat this band's <b>label and position with caution</b> — see the correction. Its area still trends with oxidation in the GO model, but overlapping C–H stretching can contaminate it.",
-  diagnostics:"Use as a qualitative oxidation indicator only; verify against the C–H region and the canonical 2450 cm⁻¹ feature.",
-  correction:"<b>Nomenclature conflict.</b> In mainstream graphene literature (Ferrari &amp; Basko; Malard), <b>D+D″ is the ~2450 cm⁻¹ band</b> (a.k.a. G*) — the D iTO phonon combined with a phonon on the <b>LA branch (~1100 cm⁻¹)</b>, not the ~1500 cm⁻¹ amorphous band. Moreover, the ~2850–2920 cm⁻¹ window is where <b>sp³ C–H stretching</b> appears in oxidised GO (ν<sub>s</sub>CH₂ ≈ 2853, ν<sub>as</sub>CH₂ ≈ 2921). So a feature you see at ~2870 cm⁻¹ may be C–H, not a phonon combination. If you observe a band near <span class='mono'>2450 cm⁻¹</span>, that is the true D+D″ / G*.",
-  refs:["ferraribasko13","malard09","fr2000","claramunt15","lopez20"]},
+ {id:"DDpp",label:"G*",name:"G* band (D+D″ / iTO+LA)",region:"second",order:"Second-order",activated:"Weak, disorder-related",sym:"iTO + LA combination",posText:"~2450 cm⁻¹",posSort:2450,plot:{mu:2450,A:.12,sig:45},
+  origin:"iTO + LA intervalley combination",use:"Weak lattice fingerprint; graphitic-order check",
+  process:"Second-order <b>intervalley combination</b> of one in-plane transverse-optical (iTO / D-band) phonon and one longitudinal-acoustic (LA) phonon near the K point. Weak and only mildly dispersive.",
+  mechanism:"A genuine graphene-lattice combination mode, also written <b>D+D″</b> — where here “D″” means the ~1100 cm⁻¹ LA-branch phonon, <i>not</i> the ~1500 cm⁻¹ amorphous band. It is distinct from the ~2850–2920 cm⁻¹ window, which in oxidised GO is dominated by sp³ C–H stretching.",
+  meaning:"A weak second-order feature centred near <b>2450 cm⁻¹</b>. Your fits (2450–2550) and measured ~2459 sit right in range; the exact position is mildly excitation-dependent, so small left/right shifts are expected. Mainly a confirmation of an intact graphitic lattice.",
+  diagnostics:"Presence confirms graphitic ordering; fit with a single Lorentzian and don’t over-interpret small shifts.",
+  correction:"<b>Fixed in this version.</b> Earlier this atlas placed “D+D″” at ~2850–2900 cm⁻¹. The correct band — the one your data labels <b>G*</b> — is here at <b>~2450 cm⁻¹</b> (iTO+LA). The ~2850–2920 cm⁻¹ region is sp³ C–H stretching, not a phonon combination, so it is not a separate lattice band.",
+  refs:["malard09","ferraribasko13","claramunt15","lopez20"]},
 
  {id:"DDp",label:"D+D′",name:"D+D′ combination band",region:"second",order:"Second-order",activated:"Defect-activated",sym:"combination",posText:"~2930–2950 cm⁻¹",posSort:2935,plot:{mu:2935,A:.19,sig:60},
   origin:"D (intervalley) + D′ (intravalley)",use:"Overall disorder; sp² recovery on reduction",
@@ -265,7 +265,10 @@ const RATIOS = [
   note:"Suspended high-quality monolayers can reach I_2D/I_G ≈ 4. Substrate doping lowers the ratio, so combine with FWHM.",refs:["ferrari06","ferraribasko13"]},
  {n:"A_D′ / A_G  (integrated)",t:"sp³ vs. vacancy character",b:"Integrated-area version used in GO work:",
   eqs:["Compared against ab-initio curves for sp³ vs. vacancy defects","Position of 2D and of D+D′ → % sp² carbon (López-Díaz correlations)"],
-  note:"Three independent correlations (I_D/I_G, ω(2D), ω(D+D′)) should agree — cross-check them and, where possible, against XPS C/O.",refs:["lopez20","claramunt15"]}
+  note:"Three independent correlations (I_D/I_G, ω(2D), ω(D+D′)) should agree — cross-check them and, where possible, against XPS C/O. Related practical metrics: <b>G-band FWHM</b> broadens with structural disorder, and the <b>G/D area ratio</b> scales with inter-defect distance L_D — the two metrics used in your spreadsheet.",refs:["lopez20","claramunt15"]},
+ {n:"I(2D) / I(D+D′)",t:"Sample order vs. oxidation",b:"An order gauge that explains a common surprise:",
+  eqs:["Ordered / graphitic (few defects): 2D strong &amp; sharp → I(2D) &gt; I(D+D′)","Highly oxidised / disordered GO: 2D weak &amp; broad, combination bands grow → I(D+D′) &gt; I(2D)"],
+  note:"2D needs <b>no defect</b> (two-phonon, momentum-conserved), so it collapses as oxidation rises while defect-activated D+D′ grows. If your 2D is stronger than the literature’s, your sample is <b>less oxidised / more graphitic</b> than theirs. Laser wavelength and layer number also shift these ratios.",refs:["lopez20","claramunt15","ferraribasko13"]}
 ];
 
 const CHEAT = [
